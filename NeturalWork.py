@@ -39,8 +39,28 @@ class neturalNetWork:
 
         return final_outputs
 
-    def train(self):
-        pass
+    def train(self, input_list, target_list):
+        inputs = np.array(input_list, ndmin=2).T
+        hidden_inputs = np.dot(self.wih, inputs)
+        hidden_outputs = self.activate_function(hidden_inputs)
+
+        final_inputs = np.dot(self.who, hidden_outputs)
+        final_outputs = self.activate_function(final_inputs)
+
+        targets = np.array(target_list, ndmin=2).T
+
+        # 输出层的误差
+        output_errors = targets - final_outputs
+        self.who += self.learnGrate * np.dot(output_errors * final_outputs * (1 - final_outputs),
+                                             np.transpose(hidden_outputs))
+        # 隐藏层的误差
+        hidden_errors = np.dot(self.who.T, output_errors)
+        self.wih += self.learnGrate * np.dot(hidden_errors * hidden_outputs * (1.0 - hidden_outputs),
+                                             np.transpose(inputs))
+
+
+
+
 
 inputNodes = 3
 hiddenNodes = 3
