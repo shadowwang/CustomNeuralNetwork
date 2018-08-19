@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.special as sc
+import matplotlib.pyplot as mp
 
 # 自定义神经网络
 class neturalNetWork:
@@ -62,11 +63,44 @@ class neturalNetWork:
 
 
 
-inputNodes = 3
-hiddenNodes = 3
-outputNodes = 3
+inputNodes = 784# 28*28的输入矩阵
+hiddenNodes = 100
+outputNodes = 10# 十个输出节点，对应数字0-9
 learnGrate = 0.5
 
 n = neturalNetWork(inputNodes, hiddenNodes, outputNodes, learnGrate)
-print(n.query([1.0, -0.5, 1.5]))
+# print(n.query([1.0, -0.5, 1.5]))
+
+# 训练集
+data_file = open("dataset/mnist_train_100.csv", 'r')
+data_list = data_file.readlines()
+data_file.close()
+
+for record in data_list:
+    all_values = record.split(",")
+    inputs = (np.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+    targets = np.zeros(outputNodes) + 0.01
+    targets[int(all_values[0])] = 0.99
+    n.train(inputs, targets)
+
+# 测试集
+test_data_file = open("dataset/mnist_test_10.csv", 'r')
+test_data_list = test_data_file.readlines()
+test_data_file.close()
+
+scoreCard = []
+
+for test_record in test_data_list:
+    all_test_values = test_record.split(",")
+    result_digit = int(all_test_values[0])
+    print("正确的手写数字结果是：", result_digit)
+
+    input_list = (np.asfarray(all_test_values[1:]) / 255.0 * 0.99) + 0.01
+    outputs = n.query(input_list)
+    label = np.argmax(outputs)
+    print("神经网络的识别结果是：", label)
+    print("####################")
+
+
+
 
